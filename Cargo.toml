@@ -10,9 +10,10 @@ edition = "2021"
 version = "0.1.0"
 license-file = "LICENSE"
 description = "bs58 wrapper to make it more ergonomic to work with fixed-size byte arrays"
-repository = "https://github.com/igneous-labs/bs58-const"
+repository = "https://github.com/igneous-labs/bs58-fixed"
 
 [workspace.dependencies]
 bs58 = { version = "^0.5", default-features = false }
 
-# workspace members
+# dev-dependencies
+proptest = { version = "^1" }
