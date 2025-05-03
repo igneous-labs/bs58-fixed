@@ -70,7 +70,7 @@ impl<const MAX_STR_LEN: usize> Bs58Str<MAX_STR_LEN> {
     #[inline]
     pub fn encode<const BUF_LEN: usize>(buf: &[u8; BUF_LEN]) -> Self {
         let mut res = Self::new();
-        res.encode_onto(buf);
+        res.encode_from(buf);
         res
     }
 
@@ -79,7 +79,7 @@ impl<const MAX_STR_LEN: usize> Bs58Str<MAX_STR_LEN> {
     // because we cant do `buf: &[u8; Self::BUF_LEN]` yet
     /// Encodes `buf` onto `self`, overwriting previous data
     #[inline]
-    pub fn encode_onto<const BUF_LEN: usize>(&mut self, buf: &[u8; BUF_LEN]) {
+    pub fn encode_from<const BUF_LEN: usize>(&mut self, buf: &[u8; BUF_LEN]) {
         const {
             assert!(BUF_LEN == Self::BUF_LEN);
         }
