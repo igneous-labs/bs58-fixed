@@ -2,6 +2,8 @@ use core::{cmp::Ordering, fmt::Display, ops::Deref};
 
 use bs58::encode::EncodeTarget;
 
+use crate::{buf_len, Bs58Str};
+
 /// A constant max-size base58-encoded string
 /// for encoding of fixed-size buffers
 #[derive(Debug, Clone, Copy)]
@@ -37,29 +39,16 @@ impl<const MAX_STR_LEN: usize> Bs58String<MAX_STR_LEN> {
         // safety: bs58 alphabet is valid ascii/utf8
         unsafe { core::str::from_utf8_unchecked(self.as_slice()) }
     }
+
+    #[inline]
+    pub const fn as_bs58_str(&self) -> Bs58Str<'_, MAX_STR_LEN> {
+        Bs58Str(self.as_str())
+    }
 }
 
 /// Codec
 impl<const MAX_STR_LEN: usize> Bs58String<MAX_STR_LEN> {
-    /// let `log_x()` be log base x
-    ///
-    /// let `lb()` be log base 2 aka `log_2()`
-    ///
-    /// ```md
-    /// 256 ^ BUF_LEN = 58 ^ MAX_STR_LEN
-    /// BUF_LEN = log_256(58 ^ MAX_STR_LEN)
-    ///         = lb(58 ^ MAX_STR_LEN) / lb(256)
-    ///         = MAX_STR_LEN * lb(58) / 8
-    ///
-    /// lb(58) = 5.857980995127572
-    /// ```
-    ///
-    /// Approximate this operation by multiplying 1000 on numerator
-    /// and denominator, then round off(up) numerator
-    /// so `BUF_LEN = MAX_STR_LEN * 5858 / 8000`.
-    ///
-    /// Round down BUF_LEN to be conservative
-    pub const BUF_LEN: usize = { MAX_STR_LEN * 5858 / 8000 };
+    pub const BUF_LEN: usize = buf_len(MAX_STR_LEN);
 
     // Need to use a const generic with comptime assertion
     // here instead of associated const
@@ -87,28 +76,15 @@ impl<const MAX_STR_LEN: usize> Bs58String<MAX_STR_LEN> {
         }
     }
 
-    // Need to use a const generic with comptime assertion
-    // here instead of associated const
-    // because we cant do `-> [u8; Self::BUF_LEN]` yet
     #[inline]
     pub fn decode<const BUF_LEN: usize>(&self) -> [u8; BUF_LEN] {
-        let mut res = [0u8; BUF_LEN];
-        self.decode_onto(&mut res);
-        res
+        self.as_bs58_str().decode()
     }
 
-    // Need to use a const generic with comptime assertion
-    // here instead of associated const
-    // because we cant do `-> [u8; Self::BUF_LEN]` yet
     /// Decodes `self` onto `buf`, overwriting previous data
     #[inline]
     pub fn decode_onto<const BUF_LEN: usize>(&self, buf: &mut [u8; BUF_LEN]) {
-        const {
-            assert!(BUF_LEN == Self::BUF_LEN);
-        }
-
-        // safety: len checked at compile time above
-        unsafe { bs58::decode(self.as_slice()).onto(buf).unwrap_unchecked() };
+        self.as_bs58_str().decode_onto(buf);
     }
 }
 
@@ -119,12 +95,12 @@ impl<const MAX_STR_LEN: usize> EncodeTarget for Bs58String<MAX_STR_LEN> {
         _max_len: usize,
         f: impl for<'a> FnOnce(&'a mut [u8]) -> bs58::encode::Result<usize>,
     ) -> bs58::encode::Result<usize> {
-        let len = f(&mut self.buf)?;
-        if len > MAX_STR_LEN {
+        let strlen = f(&mut self.buf)?;
+        if strlen > MAX_STR_LEN {
             Err(bs58::encode::Error::BufferTooSmall)
         } else {
-            self.len = len;
-            Ok(len)
+            self.len = strlen;
+            Ok(strlen)
         }
     }
 }
@@ -137,6 +113,20 @@ impl<const MAX_STR_LEN: usize> Deref for Bs58String<MAX_STR_LEN> {
     #[inline]
     fn deref(&self) -> &Self::Target {
         self.as_str()
+    }
+}
+
+impl<const MAX_STR_LEN: usize> AsRef<str> for Bs58String<MAX_STR_LEN> {
+    #[inline]
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<const MAX_STR_LEN: usize> AsRef<[u8]> for Bs58String<MAX_STR_LEN> {
+    #[inline]
+    fn as_ref(&self) -> &[u8] {
+        self.as_slice()
     }
 }
 
