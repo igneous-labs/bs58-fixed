@@ -1,0 +1,15 @@
+[package]
+name = "bs58-fixed-wasm"
+edition.workspace = true
+version.workspace = true
+license-file.workspace = true
+description.workspace = true
+repository.workspace = true
+
+[features]
+default = []
+
+[dependencies]
+bs58-fixed = { workspace = true }
+serde = { workspace = true }
+wasm-bindgen = { workspace = true }
