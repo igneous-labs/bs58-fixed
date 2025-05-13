@@ -1,7 +1,10 @@
-#![cfg_attr(not(test), no_std)]
 #![doc = include_str!("../README.md")]
 
 pub mod serde;
+
+mod wasm_abi;
+
+pub use wasm_abi::*;
 
 // impl notes:
 // would really only like BUF_LEN const-generic here, but limits of const-generics
