@@ -1,0 +1,16 @@
+{
+  "name": "wasm",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "bs58-fixed-wasm-consumer": "file:../consumer/pkg"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "vitest": "^3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

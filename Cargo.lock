@@ -57,8 +57,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "bs58-fixed-wasm-test"
+name = "bs58-fixed-wasm-consumer"
 version = "0.1.0"
+dependencies = [
+ "bs58-fixed-wasm",
+ "serde",
+ "tsify-next",
+ "wasm-bindgen",
+]
 
 [[package]]
 name = "bumpalo"

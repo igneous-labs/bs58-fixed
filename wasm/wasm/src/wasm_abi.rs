@@ -18,7 +18,7 @@ unsafe extern "C" {
     pub type JsType;
 }
 
-const DECL: &str = "type Bs58Array = string";
+const DECL: &str = "export type Bs58Array = string";
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_APPEND_CONTENT: &'static str = DECL;
@@ -125,6 +125,8 @@ impl<const BUF_LEN: usize, const MAX_STR_LEN: usize> VectorIntoWasmAbi
 
     #[inline]
     fn vector_into_abi(vector: Box<[Self]>) -> Self::Abi {
+        // TODO: intermediate vec allocation looks unnecessary here
+        // but idk how to remove it
         let values = vector
             .iter()
             // wasm_bindgen doesn't forward the error message from the `into_js` result.
@@ -215,6 +217,8 @@ impl<const BUF_LEN: usize, const MAX_STR_LEN: usize> VectorFromWasmAbi
 
     #[inline]
     unsafe fn vector_from_abi(js: Self::Abi) -> Box<[Self]> {
+        // TODO: intermediate vec allocation looks unnecessary here
+        // but idk how to remove it
         JsValue::vector_from_abi(js)
             .iter()
             .map(|value| {
