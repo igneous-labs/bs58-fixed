@@ -1,0 +1,16 @@
+[package]
+name = "bs58-fixed-wasm-consumer"
+edition.workspace = true
+version.workspace = true
+license-file.workspace = true
+description.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+bs58-fixed-wasm = { workspace = true, features = ["js"] }
+serde = { workspace = true, features = ["derive"] }
+tsify-next = { workspace = true }
+wasm-bindgen = { workspace = true }

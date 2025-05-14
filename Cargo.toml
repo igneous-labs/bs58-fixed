@@ -2,6 +2,8 @@
 resolver = "2"
 members = [
     "lib",
+    "wasm/test/consumer",
+    "wasm/wasm",
 ]
 
 
@@ -14,6 +16,13 @@ repository = "https://github.com/igneous-labs/bs58-fixed"
 
 [workspace.dependencies]
 bs58 = { version = "^0.5", default-features = false }
+serde = { version = "^1", default-features = false }
+tsify-next = { version = "^0.5", default-features = false }
+wasm-bindgen = { version = "^0.2", default-features = false }
 
 # dev-dependencies
 proptest = { version = "^1" }
+
+# workspace members
+bs58-fixed = { path = "./lib" }
+bs58-fixed-wasm = { path = "./wasm/wasm" }
